@@ -12,13 +12,14 @@ public class GetAllHandler extends ServiceHandler {
     @Override
     public void handle(final RoutingContext routingContext) {
         this.repository.getServices().setHandler(ar -> {
-           if(ar.failed()) {
-               routingContext.fail(ar.cause());
-           } else {
-               routingContext.response()
-                   .putHeader("content-type", CONTENT_TYPE_JSON_UTF8)
-                   .end(Json.encode(ar.result()));
-           }
+            if(ar.failed()) {
+                routingContext.fail(ar.cause());
+            }
+            else {
+                routingContext.response()
+                    .putHeader("content-type", CONTENT_TYPE_JSON_UTF8)
+                    .end(Json.encode(ar.result()));
+            }
         });
     }
 }

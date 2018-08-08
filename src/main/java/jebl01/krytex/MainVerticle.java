@@ -25,18 +25,15 @@ public class MainVerticle extends AbstractVerticle {
 
     static {
         Json.mapper.setDateFormat(DATE_FORMAT);
-        System.setProperty("java.net.preferIPv4Stack" , "true");
-        java.security.Security.setProperty("networkaddress.cache.ttl" , "60");
+        System.setProperty("java.net.preferIPv4Stack", "true");
+        java.security.Security.setProperty("networkaddress.cache.ttl", "60");
     }
 
     //only used for starting app in IDE
     public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
         final CompletableFuture<AsyncResult<String>> resultFuture = new CompletableFuture<>();
-
         Vertx.vertx().deployVerticle(new MainVerticle(), resultFuture::complete);
-
         final AsyncResult<String> result = resultFuture.get(2, TimeUnit.SECONDS);
-
         if(result.failed()) {
             throw new RuntimeException(result.cause());
         }
@@ -47,40 +44,45 @@ public class MainVerticle extends AbstractVerticle {
         final ConfigRetriever configRetriever = ConfigRetriever.create(vertx);
         final Router router = Router.router(vertx);
 
-
-        //always start with config
+        //always require config
         configRetriever.getConfig(ar -> {
             if(ar.failed()) {
                 future.fail(ar.cause());
-            } else {
+            }
+            else {
+                //read config
                 final int port = ar.result().getInteger("server.port", 8080);
                 final String filePath = ar.result().getString("repository.path", "~/krytex.data");
                 final int maxConcurrentPolls = ar.result().getInteger("maxConcurrentPolls", 3);
                 final int pollIntervalMs = ar.result().getInteger("pollIntervalMs", 60_000);
 
+                //wire stuff
                 final ServiceRepository serviceRepository = new FileRepository(vertx, filePath);
                 final ServicePoller servicePoller = new ServicePoller(
                     serviceRepository,
                     io.vertx.rxjava.core.Vertx.vertx().createHttpClient(),
                     maxConcurrentPolls);
 
+                //wire routes
                 router.get("/service").handler(new GetAllHandler(serviceRepository));
                 router.route("/service").handler(BodyHandler.create());
                 router.post("/service").handler(new CreateHandler(serviceRepository));
                 router.delete("/service/:id").handler(new DeleteHandler(serviceRepository));
 
+                //start server and poller
                 vertx.createHttpServer()
                     .requestHandler(router::accept)
                     .listen(port, result -> {
                         if(result.succeeded()) {
-                            future.complete();
                             System.out.println("HTTP server started on port: " + port);
                             System.out.println("File store located at: " + filePath);
 
                             //schedule poller!
                             System.out.println("scheduling poller, maxConcurrentPolls=" + maxConcurrentPolls + " pollIntervalMs=" + pollIntervalMs);
                             vertx.setPeriodic(pollIntervalMs, id -> servicePoller.poll());
-                        } else {
+                            future.complete();
+                        }
+                        else {
                             future.fail(result.cause());
                         }
                     });

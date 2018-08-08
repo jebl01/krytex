@@ -6,7 +6,10 @@ import java.util.List;
 
 public interface ServiceRepository {
     Future<List<Service>> getServices();
+
     Future<Void> persistAll(List<Service> services);
+
     Future<Service> persist(Service service);
+
     Future<Void> delete(String id);
 }

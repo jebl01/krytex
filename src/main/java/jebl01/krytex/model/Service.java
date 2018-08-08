@@ -1,7 +1,6 @@
 package jebl01.krytex.model;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.UUID;
 

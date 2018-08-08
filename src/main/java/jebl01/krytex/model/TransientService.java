@@ -9,7 +9,7 @@ public class TransientService {
 
     @JsonCreator
     public TransientService(@JsonProperty("name") final String name,
-                   @JsonProperty("url") final String url) {
+                            @JsonProperty("url") final String url) {
         this.name = name;
         this.url = url;
     }

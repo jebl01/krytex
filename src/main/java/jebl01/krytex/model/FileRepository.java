@@ -27,13 +27,12 @@ public class FileRepository implements ServiceRepository {
     @Override
     public Future<List<Service>> getServices() {
         final Future<List<Service>> servicesFuture = Future.future();
-
         vertx.fileSystem().open(file, new OpenOptions(), ar -> {
             if(ar.failed()) {
                 servicesFuture.fail(ar.cause());
-            } else {
+            }
+            else {
                 final AsyncFile asyncFile = ar.result();
-
                 final JsonParser jsonParser = JsonParser.newParser(asyncFile);
                 jsonParser.arrayValueMode()
                     .exceptionHandler(t -> {
@@ -46,21 +45,19 @@ public class FileRepository implements ServiceRepository {
                         }
                         asyncFile.close();
                     })
-                    .handler(event -> servicesFuture.complete(event.mapTo(new TypeReference<List<Service>>() {})));
+                    .handler(event -> servicesFuture.complete(event.mapTo(new TypeReference<List<Service>>() {
+                    })));
             }
         });
-
         return servicesFuture;
     }
 
     @Override
     public Future<Void> persistAll(final List<Service> services) {
         final Future<Void> future = Future.future();
-
         vertx.executeBlocking(f -> {
             vertx.fileSystem().writeFile(file, Json.encodeToBuffer(services), f.completer());
         }, future.completer());
-
         return future;
     }
 
@@ -69,7 +66,6 @@ public class FileRepository implements ServiceRepository {
         return getServices().compose(services -> {
             final List<Service> mutatedList = new ArrayList<>(services);
             mutatedList.add(service);
-
             return persistAll(mutatedList);
         }).compose(v -> Future.succeededFuture(service));
     }
@@ -80,7 +76,6 @@ public class FileRepository implements ServiceRepository {
             final List<Service> mutatedList = services.stream()
                 .filter(service -> !Objects.equals(service.id, id))
                 .collect(Collectors.toList());
-
             return persistAll(mutatedList);
         });
     }

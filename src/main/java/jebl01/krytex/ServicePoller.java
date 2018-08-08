@@ -23,31 +23,32 @@ public class ServicePoller {
     public void poll() {
         System.out.println("polling services!");
         repository.getServices().setHandler(ar -> {
-           if(ar.failed()) {
-               System.out.println("failed to get services from file");
-           } else {
-               Observable
-                   .from(ar.result())
-                   .flatMap(
-                       service -> {
-                           System.out.println("polling: " + service.url);
-                           return getAbs(client, service.url)
-                               .subscribeOn(Schedulers.io())
-                               .map(s -> service.cloneWithStatus(s.statusCode() / 100 == 2 ? Status.OK : Status.FAIL));
-                       },
-                       maxConcurrentPolls)
-                   .toList()
-                   .subscribe(
-                       services -> {
-                           System.out.println("persisting polling result!");
-                           repository.persistAll(services);
-                       },
-                       error -> {
-                           System.out.println("failed to poll services!");
-                           error.printStackTrace();
-                       },
-                       () -> System.out.println("finished polling services!"));
-           }
+            if(ar.failed()) {
+                System.out.println("failed to get services from file");
+            }
+            else {
+                Observable
+                    .from(ar.result())
+                    .flatMap(
+                        service -> {
+                            System.out.println("polling: " + service.url);
+                            return getAbs(client, service.url)
+                                .subscribeOn(Schedulers.io())
+                                .map(s -> service.cloneWithStatus(s.statusCode() / 100 == 2 ? Status.OK : Status.FAIL));
+                        },
+                        maxConcurrentPolls)
+                    .toList()
+                    .subscribe(
+                        services -> {
+                            System.out.println("persisting polling result!");
+                            repository.persistAll(services);
+                        },
+                        error -> {
+                            System.out.println("failed to poll services!");
+                            error.printStackTrace();
+                        },
+                        () -> System.out.println("finished polling services!"));
+            }
         });
     }
 

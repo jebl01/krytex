@@ -17,14 +17,15 @@ public class CreateHandler extends ServiceHandler {
         final Service service = Service.createNew(transientService);
 
         repository.persist(service).setHandler(ar -> {
-           if(ar.failed()) {
-               routingContext.fail(ar.cause());
-           } else {
-               routingContext.response()
-                   .setStatusCode(201)
-                   .putHeader("content-type", CONTENT_TYPE_JSON_UTF8)
-                   .end(Json.encodePrettily(ar.result()));
-           }
+            if(ar.failed()) {
+                routingContext.fail(ar.cause());
+            }
+            else {
+                routingContext.response()
+                    .setStatusCode(201)
+                    .putHeader("content-type", CONTENT_TYPE_JSON_UTF8)
+                    .end(Json.encodePrettily(ar.result()));
+            }
         });
     }
 }
