@@ -1,0 +1,5 @@
+{
+    "server.port": 8080,
+    "repository.path": "krytex.data",
+    "pollIntervalMs": 10000
+}

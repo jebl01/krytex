@@ -1,0 +1,23 @@
+[
+    {
+        "id": "d3e623aa-3e35-430a-b6d7-8b029ef35ad4",
+        "name": "test1",
+        "url": "http://test1.nu",
+        "status": "UNKNOWN",
+        "lastCheck": null
+    },
+    {
+        "id": "d3e623aa-3e35-430a-b6d7-8b029ef35ad4",
+        "name": "test2",
+        "url": "http://test2.nu",
+        "status": "FAIL",
+        "lastCheck": "2014-06-16 16:42"
+    },
+    {
+        "id": "d3e623aa-3e35-430a-b6d7-8b029ef35ad4",
+        "name": "test3",
+        "url": "http://test3.nu",
+        "status": "OK",
+        "lastCheck": "2014-06-16 16:42"
+    }
+]
