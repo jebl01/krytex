@@ -2,6 +2,7 @@
 The amazing http status service
 
 ### How to run
+From your favourite IDE or;
 ```bash
 git clone git@github.com:jebl01/krytex.git
 cd krytex
