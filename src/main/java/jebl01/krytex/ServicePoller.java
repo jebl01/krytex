@@ -34,7 +34,7 @@ public class ServicePoller {
                             System.out.println("polling: " + service.url);
                             return getAbs(client, service.url)
                                 .subscribeOn(Schedulers.io())
-                                .map(s -> service.cloneWithStatus(s.statusCode() / 100 == 2 ? Status.OK : Status.FAIL));
+                                .map(s -> service.createUpdated(s.statusCode() / 100 == 2 ? Status.OK : Status.FAIL));
                         },
                         maxConcurrentPolls)
                     .toList()

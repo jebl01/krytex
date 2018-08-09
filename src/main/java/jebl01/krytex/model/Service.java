@@ -41,13 +41,13 @@ public class Service {
             null);
     }
 
-    public Service cloneWithStatus(final Status status) {
+    public Service createUpdated(final Status status) {
         return new Service(
             this.id,
             this.name,
             this.url,
             status,
-            status == Status.OK ? Date.from(Instant.now()) : this.lastCheck
+            Date.from(Instant.now())
         );
     }
 }
